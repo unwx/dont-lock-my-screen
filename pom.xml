@@ -4,7 +4,7 @@
 
     <groupId>unwx</groupId>
     <artifactId>dont-lock-my-screen</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <name>dont-lock-my-screen</name>
 
     <properties>

@@ -55,7 +55,9 @@ public final class MouseMover {
         }
 
         final int yOffset = 1;
-        final int delay = 1000;
+        final int delay = 5000;
+
+        waitForUserActivityToStop();
 
         while (true) {
             if (Thread.interrupted()) {
@@ -63,17 +65,45 @@ public final class MouseMover {
                 return;
             }
 
-            final Point mousePoint = MouseInfo.getPointerInfo().getLocation();
-            Logger.info("Moving mouse up");
-            robot.mouseMove(mousePoint.x, mousePoint.y + yOffset);
+            final Point point1 = getMousePos();
+            Logger.info("Moving mouse");
+            robot.mouseMove(point1.x, point1.y + yOffset);
             robot.delay(delay);
 
-            final Point afterDelayPoint = MouseInfo.getPointerInfo().getLocation();
-            if (afterDelayPoint.x == mousePoint.x && afterDelayPoint.y == mousePoint.y + yOffset) {
+            final Point point2 = getMousePos();
+            if (point2.x == point1.x && point2.y == point1.y + yOffset) {
                 Logger.info("Returning mouse back");
-                robot.mouseMove(mousePoint.x, mousePoint.y);
+                robot.mouseMove(point1.x, point1.y);
                 robot.delay(delay);
+            } else {
+                waitForUserActivityToStop();
             }
         }
+    }
+
+    private static void waitForUserActivityToStop() {
+        Logger.info("Waiting for user activity to stop");
+        final long delay = 7500;
+
+        while (true) {
+            final Point point1 = getMousePos();
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                Logger.info("Waiting was interrupted");
+                Thread.currentThread().interrupt();
+                return;
+            }
+
+            final Point point2 = getMousePos();
+            if (point1.x == point2.x && point1.y == point2.y) {
+                Logger.info("User activity ended");
+                return;
+            }
+        }
+    }
+
+    private static Point getMousePos() {
+        return MouseInfo.getPointerInfo().getLocation();
     }
 }
